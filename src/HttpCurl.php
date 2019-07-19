@@ -113,7 +113,7 @@ class HttpCurl
     /**
      * 设置超时时间，单位秒
      *
-     * @author yls
+     * @author woodlsy
      * @param int $timeOut
      * @return HttpCurl
      */
