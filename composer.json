@@ -2,7 +2,9 @@
     "name": "woodlsy/http-client",
     "description": "Simple http client",
     "type": "library",
+    "license": "MIT",
     "require": {
+        "ext-curl": "*",
         "php": ">= 7.0.0"
     },
     "minimum-stability": "dev",

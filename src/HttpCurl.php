@@ -6,17 +6,17 @@ class HttpCurl
     /**
      * @var string 请求地址
      */
-    public $url = null;
+    protected $url = null;
 
     /**
      * @var array 请求参数
      */
-    public $data = null;
+    protected $data = null;
 
     /**
      * @var bool 是否是https
      */
-    public $isHttps = false;
+    protected $isHttps = false;
 
     /**
      * 设置请求链接
@@ -36,10 +36,10 @@ class HttpCurl
      * 设置参数
      *
      * @author woodlsy
-     * @param array $data
+     * @param array|string $data
      * @return HttpCurl
      */
-    public function setData(array $data) : HttpCurl
+    public function setData($data) : HttpCurl
     {
         $this->data = $data;
         return $this;
@@ -91,7 +91,7 @@ class HttpCurl
 
         if($type == 'POST'){
             curl_setopt($ch, CURLOPT_POST, 1);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($this->data));
+            curl_setopt($ch, CURLOPT_POSTFIELDS, is_array($this->data) ? http_build_query($this->data) : $this->data);
         }
         curl_setopt($ch, CURLOPT_TIMEOUT, 20);
         $result = curl_exec($ch);
