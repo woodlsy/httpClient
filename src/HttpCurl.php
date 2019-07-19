@@ -19,6 +19,11 @@ class HttpCurl
     protected $isHttps = false;
 
     /**
+     * @var int 超时时间
+     */
+    private $timeOut = 20;
+
+    /**
      * 设置请求链接
      *
      * @author woodlsy
@@ -93,7 +98,7 @@ class HttpCurl
             curl_setopt($ch, CURLOPT_POST, 1);
             curl_setopt($ch, CURLOPT_POSTFIELDS, is_array($this->data) ? http_build_query($this->data) : $this->data);
         }
-        curl_setopt($ch, CURLOPT_TIMEOUT, 20);
+        curl_setopt($ch, CURLOPT_TIMEOUT, $this->timeOut);
         $result = curl_exec($ch);
         if(false === $result){
             throw new HttpClientException(curl_error($ch));
@@ -103,6 +108,19 @@ class HttpCurl
             throw new HttpClientException('curl status:'.$info['http_code']);
         }
         return $result;
+    }
+
+    /**
+     * 设置超时时间，单位秒
+     *
+     * @author yls
+     * @param int $timeOut
+     * @return HttpCurl
+     */
+    public function timeOut(int $timeOut) : HttpCurl
+    {
+        $this->timeOut = $timeOut;
+        return $this;
     }
 
 }
