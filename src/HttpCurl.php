@@ -120,7 +120,9 @@ class HttpCurl
             throw new HttpClientException(curl_error($ch));
         }
         $info = curl_getinfo($ch);
-        if ($info['http_code'] != '200') {
+        if (301 === (int) $info['http_code']) {
+            return $this->setUrl($info['redirect_url'])->fetch($type);
+        }elseif (200 !== (int)$info['http_code']) {
             throw new HttpClientException('curl status:' . $info['http_code']);
         }
         return $result;
