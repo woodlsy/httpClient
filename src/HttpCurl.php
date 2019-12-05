@@ -22,6 +22,16 @@ class HttpCurl
     protected $header = [];
 
     /**
+     * @var string 证书路径
+     */
+    protected $sslCert = '';
+
+    /**
+     * @var string 秘钥路径
+     */
+    protected $sslKey = '';
+
+    /**
      * 设置请求链接
      *
      * @author woodlsy
@@ -86,6 +96,21 @@ class HttpCurl
     }
 
     /**
+     * 设置证书
+     *
+     * @author woodlsy
+     * @param string $cert
+     * @param string $key
+     * @return $this
+     */
+    public function setSSLCert(string $cert, string $key)
+    {
+        $this->sslCert = $cert;
+        $this->sslKey = $key;
+        return $this;
+    }
+
+    /**
      * curl
      *
      * @author woodlsy
@@ -103,6 +128,16 @@ class HttpCurl
         if (true === $this->isHttps) {
             curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
             curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
+        }
+
+        if (!empty($this->sslCert)) {
+            curl_setopt($ch, CURLOPT_SSLCERTTYPE, 'PEM');
+            curl_setopt($ch, CURLOPT_SSLCERT, $this->sslCert);
+        }
+
+        if (!empty($this->sslKey)) {
+            curl_setopt($ch, CURLOPT_SSLKEYTYPE, 'PEM');
+            curl_setopt($ch, CURLOPT_SSLKEY, $this->sslKey);
         }
 
         if ($type == 'POST') {
