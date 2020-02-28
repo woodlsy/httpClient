@@ -32,6 +32,11 @@ class HttpCurl
     protected $sslKey = '';
 
     /**
+     * @var bool 是否压缩
+     */
+    protected $isZip = false;
+
+    /**
      * 设置请求链接
      *
      * @author woodlsy
@@ -111,6 +116,18 @@ class HttpCurl
     }
 
     /**
+     * header是否压缩
+     *
+     * @author woodlsy
+     * @return $this
+     */
+    public function isZip()
+    {
+        $this->isZip = true;
+        return $this;
+    }
+
+    /**
      * curl
      *
      * @author woodlsy
@@ -138,6 +155,10 @@ class HttpCurl
         if (!empty($this->sslKey)) {
             curl_setopt($ch, CURLOPT_SSLKEYTYPE, 'PEM');
             curl_setopt($ch, CURLOPT_SSLKEY, $this->sslKey);
+        }
+
+        if ($this->isZip) {
+            curl_setopt($ch, CURLOPT_ACCEPT_ENCODING, "gzip,deflate");
         }
 
         if ($type == 'POST') {
