@@ -36,6 +36,8 @@ class HttpCurl
      */
     protected $isZip = false;
 
+    protected $result = null;
+
     /**
      * 设置请求链接
      *
@@ -128,6 +130,17 @@ class HttpCurl
     }
 
     /**
+     * 获取结果
+     *
+     * @author yls
+     * @return null
+     */
+    public function getResult()
+    {
+        return $this->result;
+    }
+
+    /**
      * curl
      *
      * @author woodlsy
@@ -175,6 +188,7 @@ class HttpCurl
         if (false === $result) {
             throw new HttpClientException(curl_error($ch));
         }
+        $this->result = $result;
         $info = curl_getinfo($ch);
         if (301 === (int) $info['http_code']) {
             return $this->setUrl($info['redirect_url'])->fetch($type);
