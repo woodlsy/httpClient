@@ -182,6 +182,8 @@ class HttpCurl
         $ip             = long2ip(mt_rand($ipLong[$rand_key][0], $ipLong[$rand_key][1]));
         $this->header[] = 'CLIENT-IP:' . $ip;
         $this->header[] = 'X-FORWARDED-FOR:' . $ip;
+        $this->header[] = 'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36';
+        $this->header[] = 'Content-Type: application/json; charset=UTF-8';
         return $this;
     }
 
