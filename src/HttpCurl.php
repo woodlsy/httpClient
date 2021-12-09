@@ -44,6 +44,17 @@ class HttpCurl
     protected $keepDataFormat = false;
 
     /**
+     * @var bool cookies
+     */
+    protected $cookies = false;
+    protected $cookiesFilePath = 'cookies.txt';
+
+    /**
+     * @var bool 开启重定向跳转
+     */
+    protected $redirect = true;
+
+    /**
      * 设置请求链接
      *
      * @author woodlsy
@@ -53,7 +64,7 @@ class HttpCurl
     public function setUrl(string $url) : HttpCurl
     {
         $this->url     = $url;
-        $this->isHttps = preg_match('/^https?:/i', $url) > 0 ? true : false;
+        $this->isHttps = preg_match('/^https?:/i', $url) > 0;
         return $this;
     }
 
@@ -159,6 +170,35 @@ class HttpCurl
     }
 
     /**
+     * 开启cookies
+     *
+     * @author yls
+     * @param string|null $cookiesFilePath
+     * @return $this
+     */
+    public function openCookies(string $cookiesFilePath = null)
+    {
+        if (!empty($cookiesFilePath)) {
+            $this->cookiesFilePath = $cookiesFilePath;
+        }
+        $this->cookies = true;
+        return $this;
+    }
+
+    /**
+     * 重定向自动跳转
+     *
+     * @author yls
+     * @param bool $redirect
+     * @return $this
+     */
+    public function redirect(bool $redirect)
+    {
+        $this->redirect = $redirect;
+        return $this;
+    }
+
+    /**
      * 随机IP，只是简单的伪造，最好还是通过代理
      *
      * @author yls
@@ -230,6 +270,19 @@ class HttpCurl
             curl_setopt($ch, CURLOPT_HTTPHEADER, $this->header);
         }
 
+        if ($this->cookies) {
+            if (!is_file($this->cookiesFilePath)) {
+                file_put_contents($this->cookiesFilePath, '');
+            }
+            $this->cookiesFilePath = realpath($this->cookiesFilePath);
+            curl_setopt($ch, CURLOPT_COOKIEFILE, $this->cookiesFilePath);
+            curl_setopt($ch, CURLOPT_COOKIEJAR, $this->cookiesFilePath);
+        }
+
+        if ($this->redirect) {
+            curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+        }
+
         curl_setopt($ch, CURLOPT_TIMEOUT, 20);
         $result = curl_exec($ch);
         if (false === $result) {
@@ -237,9 +290,7 @@ class HttpCurl
         }
         $this->result = $result;
         $info         = curl_getinfo($ch);
-        if (301 === (int) $info['http_code']) {
-            return $this->setUrl($info['redirect_url'])->fetch($type);
-        } elseif (200 !== (int) $info['http_code']) {
+        if (200 !== (int) $info['http_code']) {
             return 'curl status:' . $info['http_code'] . ' curl url:' . $this->url;
         }
         return $result;
